@@ -1,0 +1,15 @@
+export { CategoriesIcon } from './CategoriesIcon';
+export { CategoriesIconSelected } from './CategoriesIconSelected';
+export { ChevronRightIcon } from './ChevronRightIcon';
+export { FavoritesIcon } from './FavoritesIcon';
+export { FavoritesIconSelected } from './FavoritesIconSelected';
+export { FavoritesTabIcon } from './FavoritesTabIcon';
+export { HeaderHeartIcon } from './HeaderHeartIcon';
+export { HomeIcon } from './HomeIcon';
+export { HomeIconSelected } from './HomeIconSelected';
+export { MoonIcon } from './MoonIcon';
+export { SettingsIcon } from './SettingsIcon';
+export { SettingsIconSelected } from './SettingsIconSelected';
+export { RatingStarIcon } from './RatingStarIcon';
+export { ShareIcon } from './ShareIcon';
+export { StarIcon } from './StarIcon';

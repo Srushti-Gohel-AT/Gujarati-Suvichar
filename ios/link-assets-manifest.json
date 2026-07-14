@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/AnekGujarati-Bold.ttf",
+      "sha1": "f7e9125a43da5a51812aa12c50f72002e86e1f9b"
+    },
+    {
+      "path": "assets/fonts/AnekGujarati-Medium.ttf",
+      "sha1": "c444811aff631959c7e9437e3680ad440a7282af"
+    },
+    {
+      "path": "assets/fonts/AnekGujarati-Regular.ttf",
+      "sha1": "0401097a82a5f3225af457d8ebb23fc1464064c5"
+    }
+  ]
+}
