@@ -100,7 +100,7 @@ export const typography = {
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
-  /** Settings list row labels — Medium 16; line-height 22 prevents Gujarati clipping */
+  /** Settings list row labels — Anek Gujarati Medium 16px; line-height > 100% for Gujarati matras in RN */
   settingsLabel: {
     ...fontForWeight('medium'),
     fontSize: 16,

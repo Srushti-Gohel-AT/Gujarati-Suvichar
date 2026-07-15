@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ColorSchemePreference } from './types';
 
@@ -15,10 +16,28 @@ function isValidPreference(
   return value !== null && VALID_PREFERENCES.has(value as ColorSchemePreference);
 }
 
+type ThemePreferencesNative = {
+  setPreference: (preference: ColorSchemePreference) => void;
+};
+
+function getNativeThemePreferences(): ThemePreferencesNative | undefined {
+  return NativeModules.ThemePreferences as ThemePreferencesNative | undefined;
+}
+
+export function persistNativeThemePreference(
+  preference: ColorSchemePreference,
+): void {
+  getNativeThemePreferences()?.setPreference(preference);
+}
+
 export async function loadThemePreference(): Promise<ColorSchemePreference | null> {
   try {
     const stored = await AsyncStorage.getItem(STORAGE_KEY);
-    return isValidPreference(stored) ? stored : null;
+    const preference = isValidPreference(stored) ? stored : null;
+    if (preference) {
+      persistNativeThemePreference(preference);
+    }
+    return preference;
   } catch {
     return null;
   }
@@ -27,6 +46,8 @@ export async function loadThemePreference(): Promise<ColorSchemePreference | nul
 export async function saveThemePreference(
   preference: ColorSchemePreference,
 ): Promise<void> {
+  persistNativeThemePreference(preference);
+
   try {
     await AsyncStorage.setItem(STORAGE_KEY, preference);
   } catch {

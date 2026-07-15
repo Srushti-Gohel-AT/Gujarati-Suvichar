@@ -1,10 +1,10 @@
 export const shadows = {
   tabBar: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.16,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0x29 / 0xff,
+    shadowRadius: 6,
+    elevation: 2,
   },
   tabBarActivePill: {
     shadowColor: '#000000',

@@ -6,7 +6,7 @@ export const strings = {
   tabs: {
     home: 'હોમ',
     categories: 'શ્રેણીઓ',
-    favorites: 'મનપસંદ',
+    favorites: 'પોસ્ટ ફીડ',
     settings: 'સેટિંગ્સ',
   },
   navigation: {

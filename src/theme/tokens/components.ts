@@ -1,11 +1,15 @@
 export const componentTokens = {
   tabBar: {
-    horizontalMargin: 12,
+    horizontalMargin: 20,
     height: 68,
-    itemHeight: 44,
+    itemHeight: 42,
+    itemWidth: 111,
     rowPaddingHorizontal: 20,
-    activePillPaddingHorizontal: 14,
+    activePillPaddingHorizontal: 16,
+    activePillPaddingVertical: 8,
     activePillGap: 6,
+    activePillBorderRadius: 40.09,
+    itemGap: 35,
     iconSize: 24,
     bottomInsetMin: 20,
     scenePaddingBottom: 100,

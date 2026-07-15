@@ -185,7 +185,7 @@ function createHeaderStyles(theme: ReturnType<typeof useTheme>['theme']) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: headerLayout.gap,
+      paddingTop: headerLayout.paddingBottom,
       paddingBottom: headerLayout.paddingBottom,
       paddingHorizontal: headerLayout.paddingHorizontal,
     },

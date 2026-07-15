@@ -1,7 +1,7 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { strings } from '../i18n';
 import type { TabParamList } from '../navigation/types';
@@ -73,128 +73,100 @@ export function CustomTabBar({
           paddingHorizontal: tabBarLayout.horizontalMargin,
         },
       ]}>
-      <View style={styles.shadowWrapper}>
-        <View
-          style={[
-            styles.container,
-            {
-              borderColor: tabBar.containerBorder,
-              backgroundColor:
-                tabBar.background === 'transparent'
-                  ? undefined
-                  : tabBar.background,
-            },
-          ]}>
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: tabBar.blurFallback,
-                opacity: 0.95,
-              },
-            ]}
-          />
-          {tabBar.containerBackground !== 'transparent' ? (
-            <View
-              style={[
-                styles.containerBackground,
-                { backgroundColor: tabBar.containerBackground },
-              ]}
-            />
-          ) : null}
-          <View style={styles.tabRow}>
+      <View
+        style={[
+          styles.pill,
+          {
+            backgroundColor: tabBar.containerBackground,
+            borderColor: tabBar.containerBorder,
+          },
+        ]}>
+        <View style={styles.tabRow}>
             {state.routes.map((route, index) => {
-              const routeName = route.name as TabRouteName;
-              const { options } = descriptors[route.key];
-              const isFocused = state.index === index;
-              const config = TAB_CONFIG[routeName];
-              const IconComponent = isFocused
-                ? config.SelectedIcon
-                : config.Icon;
-              const iconColor = isFocused
-                ? tabBar.activeIcon
-                : tabBar.inactiveIcon;
-              const isFavoritesTab = routeName === 'Favorites';
+                const routeName = route.name as TabRouteName;
+                const { options } = descriptors[route.key];
+                const isFocused = state.index === index;
+                const config = TAB_CONFIG[routeName];
+                const IconComponent = isFocused
+                  ? config.SelectedIcon
+                  : config.Icon;
+                const iconColor = isFocused
+                  ? tabBar.activeIcon
+                  : tabBar.inactiveIcon;
+                const isFavoritesTab = routeName === 'Favorites';
 
-              const onPress = () => {
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: route.key,
-                  canPreventDefault: true,
-                });
+                const onPress = () => {
+                  const event = navigation.emit({
+                    type: 'tabPress',
+                    target: route.key,
+                    canPreventDefault: true,
+                  });
 
-                if (!isFocused && !event.defaultPrevented) {
-                  navigation.navigate(route.name, route.params);
-                }
-              };
-
-              const onLongPress = () => {
-                navigation.emit({
-                  type: 'tabLongPress',
-                  target: route.key,
-                });
-              };
-
-              return (
-                <Pressable
-                  key={route.key}
-                  accessibilityRole="button"
-                  accessibilityState={isFocused ? { selected: true } : {}}
-                  accessibilityLabel={
-                    options.tabBarAccessibilityLabel ?? config.label
+                  if (!isFocused && !event.defaultPrevented) {
+                    navigation.navigate(route.name, route.params);
                   }
-                  android_ripple={{
-                    color: tabBar.ripple,
-                    borderless: false,
-                  }}
-                  onPress={onPress}
-                  onLongPress={onLongPress}
-                  style={[
-                    styles.tabItem,
-                    isFocused && [
-                      styles.tabItemActive,
-                      {
-                        backgroundColor: tabBar.activePillBackground,
-                        borderColor: tabBar.activePillBorder,
-                        borderWidth:
-                          tabBar.activePillBorder === 'transparent' ? 0 : 1,
-                      },
-                    ],
-                  ]}>
-                  {isFocused ? (
-                    <View style={styles.tabActiveContent}>
-                      <View style={styles.tabIconSlot}>
-                        {isFavoritesTab ? (
-                          <FavoritesTabIcon
-                            color={iconColor}
-                            size={tabBarLayout.iconSize}
-                            variant={isDark ? 'dark' : 'light'}
-                          />
-                        ) : (
-                          <IconComponent
-                            color={iconColor}
-                            size={tabBarLayout.iconSize}
-                          />
-                        )}
+                };
+
+                const onLongPress = () => {
+                  navigation.emit({
+                    type: 'tabLongPress',
+                    target: route.key,
+                  });
+                };
+
+                return (
+                  <Pressable
+                    key={route.key}
+                    accessibilityRole="button"
+                    accessibilityState={isFocused ? { selected: true } : {}}
+                    accessibilityLabel={
+                      options.tabBarAccessibilityLabel ?? config.label
+                    }
+                    onPress={onPress}
+                    onLongPress={onLongPress}
+                    style={({ pressed }) => [
+                      styles.tabItem,
+                      isFocused && [
+                        styles.tabItemActive,
+                        { backgroundColor: tabBar.activePillBackground },
+                      ],
+                      pressed && styles.tabItemPressed,
+                    ]}>
+                    {isFocused ? (
+                      <View style={styles.tabActiveContent}>
+                        <View style={styles.tabIconSlot}>
+                          {isFavoritesTab ? (
+                            <FavoritesTabIcon
+                              color={iconColor}
+                              size={tabBarLayout.iconSize}
+                              variant={isDark ? 'dark' : 'light'}
+                            />
+                          ) : (
+                            <IconComponent
+                              color={iconColor}
+                              size={tabBarLayout.iconSize}
+                            />
+                          )}
+                        </View>
+                        <Text
+                          style={[
+                            styles.tabLabel,
+                            { color: tabBar.activeLabel },
+                          ]}>
+                          {config.label}
+                        </Text>
                       </View>
-                      <Text
-                        style={[
-                          styles.tabLabel,
-                          { color: tabBar.activeLabel },
-                        ]}>
-                        {config.label}
-                      </Text>
-                    </View>
-                  ) : (
-                    <IconComponent
-                      color={iconColor}
-                      size={tabBarLayout.iconSize}
-                    />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
+                    ) : (
+                      <View style={styles.tabIconSlot}>
+                        <IconComponent
+                          color={iconColor}
+                          size={tabBarLayout.iconSize}
+                        />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
         </View>
       </View>
     </View>
@@ -212,25 +184,15 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       bottom: 0,
       backgroundColor: 'transparent',
     },
-    shadowWrapper: {
-      width: '100%',
-      borderRadius: tabBarLayout.height,
-      ...t.shadows.tabBar,
-      backgroundColor: 'transparent',
-    },
-    container: {
+    pill: {
       width: '100%',
       height: tabBarLayout.height,
       borderRadius: tabBarLayout.height,
-      overflow: 'hidden',
       borderWidth: 1,
-    },
-    containerBackground: {
-      ...StyleSheet.absoluteFill,
+      ...t.shadows.tabBar,
     },
     tabRow: {
       flex: 1,
-      height: tabBarLayout.height,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -240,12 +202,17 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       height: tabBarLayout.itemHeight,
       alignItems: 'center',
       justifyContent: 'center',
-      alignSelf: 'center',
+    },
+    tabItemPressed: {
+      opacity: 0.85,
     },
     tabItemActive: {
-      alignSelf: 'center',
-      borderRadius: tabBarLayout.itemHeight / 2,
-      paddingHorizontal: tabBarLayout.activePillPaddingHorizontal,
+      width: tabBarLayout.itemWidth,
+      height: tabBarLayout.itemHeight,
+      borderRadius: tabBarLayout.activePillBorderRadius,
+      borderWidth:
+        t.colors.tabBar.activePillBorder === 'transparent' ? 0 : 1,
+      borderColor: t.colors.tabBar.activePillBorder,
       ...(t.colors.tabBar.showActivePillShadow
         ? t.shadows.tabBarActivePill
         : {}),
@@ -255,6 +222,7 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: tabBarLayout.activePillGap,
+      paddingHorizontal: tabBarLayout.activePillPaddingHorizontal,
     },
     tabIconSlot: {
       width: tabBarLayout.iconSize,

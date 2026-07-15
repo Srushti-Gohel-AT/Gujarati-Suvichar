@@ -21,10 +21,14 @@ export function TabNavigator() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
-          height: 0,
+          shadowOpacity: 0,
+          height: tabBar.height + tabBar.bottomInsetMin,
         },
         sceneStyle: {
           backgroundColor: theme.colors.surface,

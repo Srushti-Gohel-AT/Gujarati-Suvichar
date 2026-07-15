@@ -67,8 +67,8 @@ export type SemanticColors = {
   };
 };
 
-/** Figma light-mode navbar fill — #FFFFFF @ 20% */
-const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.2)';
+/** Frosted glass fill — visible on light surfaces (pure #FFFFFF @ 20% reads as white on white). */
+const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(228, 228, 235, 0.75)';
 
 /** Header heart button — shared fill/icon; border color varies by theme */
 const HEADER_HEART_BORDER_LIGHT = '#DDDDDD';
@@ -89,14 +89,14 @@ const lightTabBar: TabBarColors = {
   activeLabel: '#1A67FF',
   activePillBackground: '#FFFFFF',
   activePillBorder: 'transparent',
-  containerBorder: 'rgba(255, 255, 255, 0.45)',
+  containerBorder: 'rgba(255, 255, 255, 0.55)',
   blurType: 'light',
   blurAmountIos: 20,
   blurAmountAndroid: 24,
   blurFallback: LIGHT_TAB_BAR_CONTAINER_BACKGROUND,
   ripple: 'rgba(26, 103, 255, 0.12)',
   shadow: '#000000',
-  showActivePillShadow: true,
+  showActivePillShadow: false,
 };
 
 /** Figma dark-mode navbar — fill #FFFFFF @ 25%, border @ 50%, blur 20 */
@@ -187,7 +187,7 @@ export const darkColors: SemanticColors = {
     background: '#000000',
     title: '#FFFFFF',
     border: '#666666',
-    heartIcon: HEADER_HEART_ICON,
+    heartIcon: DARK_SETTINGS_ACCENT,
     heartFill: HEADER_HEART_FILL_DARK,
     heartBorder: HEADER_HEART_BORDER_DARK,
     heartBorderWidth: HEADER_HEART_BORDER_WIDTH,
