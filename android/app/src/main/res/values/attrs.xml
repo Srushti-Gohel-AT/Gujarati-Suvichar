@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BootSplash attributes -->
+    <attr name="bootSplashBackground" format="reference|color" />
+    <attr name="bootSplashLogo" format="reference" />
+    <attr name="postBootSplashTheme" format="reference" />
+
+    <!-- BootSplash theme -->
+    <style name="Theme.BootSplash" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">?attr/bootSplashBackground</item>
+    </style>
+</resources>

@@ -1,5 +1,4 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { BlurView } from '@react-native-community/blur';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -86,15 +85,14 @@ export function CustomTabBar({
                   : tabBar.background,
             },
           ]}>
-          <BlurView
-            style={StyleSheet.absoluteFill}
-            blurType={tabBar.blurType}
-            blurAmount={
-              Platform.OS === 'ios'
-                ? tabBar.blurAmountIos
-                : tabBar.blurAmountAndroid
-            }
-            reducedTransparencyFallbackColor={tabBar.blurFallback}
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: tabBar.blurFallback,
+                opacity: 0.95,
+              },
+            ]}
           />
           {tabBar.containerBackground !== 'transparent' ? (
             <View
