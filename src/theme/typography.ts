@@ -68,6 +68,37 @@ export const typography = {
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
+  /** Home / section headings — Anek Gujarati Bold 18, line-height 100% */
+  sectionTitle: {
+    fontFamily: fontFamily.bold,
+    fontSize: 18,
+    ...(Platform.OS === 'ios' ? { fontWeight: fontWeight.bold } : {}),
+    // lineHeight: 18,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
+  /** Category card labels — Anek Gujarati Medium 14, line-height 100% */
+  categoryLabel: {
+    ...fontForWeight('medium'),
+    fontSize: 14,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
+  /** Quote text inside popular quote cards — SemiBold 20 */
+  quoteCardText: {
+    ...fontForWeight('semiBold'),
+    fontSize: 20,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
+  /** Quote card action count — Anek Gujarati Medium 16, line-height 100% */
+  quoteActionCount: {
+    ...fontForWeight('medium'),
+    fontSize: 16,
+    lineHeight: 16,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
   /** Navigation header titles */
   navigationTitle: {
     ...fontForWeight('bold'),

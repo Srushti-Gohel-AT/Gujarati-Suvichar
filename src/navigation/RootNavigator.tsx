@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { strings } from '../i18n';
 import { LikedQuotesScreen } from '../screens/LikedQuotesScreen';
 import { MainScreen } from '../screens/MainScreen';
+import { QuoteCardEditScreen } from '../screens/QuoteCardEditScreen';
 import { useTheme } from '../theme';
 import type { RootStackParamList } from './types';
 
@@ -29,6 +30,22 @@ export function RootNavigator() {
           },
           headerTintColor: theme.colors.textPrimary,
           headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="QuoteCardEdit"
+        component={QuoteCardEditScreen}
+        options={{
+          title: strings.navigation.quoteCardEditTitle,
+          headerStyle: { backgroundColor: theme.colors.surface },
+          headerTitleStyle: {
+            ...theme.typography.navigationTitle,
+            color: theme.colors.textPrimary,
+          },
+          headerTintColor: theme.colors.textPrimary,
+          headerShadowVisible: false,
+          animation: 'fade',
+          animationDuration: 300,
         }}
       />
     </Stack.Navigator>

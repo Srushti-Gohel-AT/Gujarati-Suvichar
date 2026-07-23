@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   Main: undefined;
   LikedQuotes: undefined;
+  QuoteCardEdit: { quoteId: string };
 };
 
 export type TabParamList = {

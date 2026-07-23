@@ -18,6 +18,13 @@ export function TabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        animation: 'fade',
+        transitionSpec: {
+          animation: 'timing',
+          config: {
+            duration: 200,
+          },
+        },
         tabBarStyle: {
           position: 'absolute',
           backgroundColor: 'transparent',
