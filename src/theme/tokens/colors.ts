@@ -67,8 +67,10 @@ export type SemanticColors = {
   };
 };
 
-/** Figma light-mode navbar fill — white @ 20% (prefer rgba for Android compositing) */
-const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.2)';
+/** Light navbar — clean transparent glass */
+const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.08)';
+/** Dark navbar — clean transparent glass */
+const DARK_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.08)';
 
 /** Header heart button — shared fill/icon; border color varies by theme */
 const HEADER_HEART_BORDER_LIGHT = '#DDDDDD';
@@ -84,23 +86,20 @@ const DARK_SETTINGS_ACCENT = '#65B2FF';
 const lightTabBar: TabBarColors = {
   background: 'transparent',
   containerBackground: LIGHT_TAB_BAR_CONTAINER_BACKGROUND,
-  inactiveIcon: '#3D343D',
+  inactiveIcon: '#000000',
   activeIcon: '#1A67FF',
   activeLabel: '#1A67FF',
   activePillBackground: '#F0F2FF',
   activePillBorder: 'transparent',
-  containerBorder: 'rgba(255, 255, 255, 0.45)',
-  blurType: 'light',
-  blurAmountIos: 20,
-  blurAmountAndroid: 24,
+  containerBorder: 'rgba(255, 255, 255, 0.35)',
+  blurType: 'xlight',
+  blurAmountIos: 24,
+  blurAmountAndroid: 26,
   blurFallback: LIGHT_TAB_BAR_CONTAINER_BACKGROUND,
   ripple: 'rgba(26, 103, 255, 0.12)',
   shadow: '#000000',
   showActivePillShadow: false,
 };
-
-/** Figma dark-mode navbar — fill #FFFFFF @ 25%, border @ 50%, blur 20 */
-const DARK_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.25)';
 
 const darkTabBar: TabBarColors = {
   background: 'transparent',
@@ -108,12 +107,12 @@ const darkTabBar: TabBarColors = {
   inactiveIcon: '#FFFFFF',
   activeIcon: '#FFFFFF',
   activeLabel: '#FFFFFF',
-  activePillBackground: 'rgba(255, 255, 255, 0.25)',
-  activePillBorder: 'rgba(255, 255, 255, 0.5)',
-  containerBorder: 'rgba(255, 255, 255, 0.5)',
-  blurType: 'dark',
-  blurAmountIos: 20,
-  blurAmountAndroid: 20,
+  activePillBackground: 'rgba(255, 255, 255, 0.2)',
+  activePillBorder: 'rgba(255, 255, 255, 0.4)',
+  containerBorder: 'rgba(255, 255, 255, 0.28)',
+  blurType: 'xlight',
+  blurAmountIos: 24,
+  blurAmountAndroid: 26,
   blurFallback: DARK_TAB_BAR_CONTAINER_BACKGROUND,
   ripple: 'rgba(255, 255, 255, 0.12)',
   shadow: '#FFFFFF',
@@ -126,7 +125,7 @@ export const lightColors: SemanticColors = {
   surface: '#FFFFFF',
   textPrimary: '#1A1A1A',
   textSecondary: '#666666',
-  textMuted: '#9E9E9E',
+  textMuted: '#7A7A7A',
   border: '#DDDDDD',
   borderLight: '#E0E0E0',
   accent: '#E65100',
@@ -172,7 +171,7 @@ export const darkColors: SemanticColors = {
   surface: '#1E1E1E',
   textPrimary: '#FFFFFF',
   textSecondary: '#B0B0B0',
-  textMuted: '#9E9E9E',
+  textMuted: '#7A7A7A',
   border: '#333333',
   borderLight: '#333333',
   accent: '#E65100',

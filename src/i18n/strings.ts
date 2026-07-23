@@ -13,6 +13,10 @@ export const strings = {
     home: {
       title: 'સુવિચાર',
       subtitle: 'Welcome to Gujarati Suvichar',
+      categoriesTitle: 'શ્રેણીઓ',
+      categoriesError: 'શ્રેણીઓ લોડ થઈ શકી નહીં',
+      categoriesEmpty: 'કોઈ શ્રેણી ઉપલબ્ધ નથી',
+      popularTitle: 'લોકપ્રિય સુવિચાર',
     },
     categories: {
       title: 'શ્રેણીઓ',
@@ -29,6 +33,7 @@ export const strings = {
   },
   navigation: {
     likedQuotesTitle: 'મનપસંદ સુવિચાર',
+    quoteCardEditTitle: 'Quote Card Edit',
   },
   settings: {
     darkTheme: 'ડાર્ક થીમ',

@@ -1,17 +1,22 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMemo, type ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { QuotePost } from '../api/posts';
+import type { RootStackParamList } from '../navigation/types';
 import { createThemedStyles, useTheme } from '../theme';
 import { stripHtml } from '../utils/stripHtml';
 import {
   QuoteCopyIcon,
   QuoteDownloadIcon,
+  QuoteEditIcon,
   QuoteHeartIcon,
   QuoteShareIcon,
 } from './icons';
 
 type PopularQuoteCardProps = {
   quote: QuotePost;
+  backgroundColor?: string;
 };
 
 type ActionItem = {
@@ -21,10 +26,21 @@ type ActionItem = {
   icon: ReactNode;
 };
 
-export function PopularQuoteCard({ quote }: PopularQuoteCardProps) {
+type RootNavigation = NativeStackNavigationProp<RootStackParamList>;
+
+export function PopularQuoteCard({
+  quote,
+  backgroundColor,
+}: PopularQuoteCardProps) {
+  const navigation = useNavigation<RootNavigation>();
   const { theme } = useTheme();
-  const styles = useMemo(() => createCardStyles(theme), [theme]);
   const layout = theme.components.homePopularQuote;
+  const cardBg =
+    backgroundColor ?? layout.cardBackgrounds[0] ?? '#CC2E49';
+  const styles = useMemo(
+    () => createCardStyles(theme, cardBg),
+    [theme, cardBg],
+  );
 
   if (!quote?.shaayriText) {
     return null;
@@ -86,10 +102,23 @@ export function PopularQuoteCard({ quote }: PopularQuoteCardProps) {
     <View style={styles.card}>
       <View pointerEvents="none" style={styles.decorLarge} />
       <View pointerEvents="none" style={styles.decorSmall} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Edit quote"
+        onPress={() =>
+          navigation.navigate('QuoteCardEdit', { quoteId: quote.id })
+        }
+        style={({ pressed }) => [
+          styles.editButton,
+          pressed && styles.editButtonPressed,
+        ]}>
+        <QuoteEditIcon size={layout.editButtonSize} />
+      </Pressable>
       <View style={styles.content}>
         <Text style={styles.quoteText}>{quoteText}</Text>
       </View>
       <View style={styles.actionBar}>
+        <View pointerEvents="none" style={styles.actionBarTopBorder} />
         {actions.map(action => (
           <Pressable
             key={action.key}
@@ -108,7 +137,10 @@ export function PopularQuoteCard({ quote }: PopularQuoteCardProps) {
   );
 }
 
-function createCardStyles(theme: ReturnType<typeof useTheme>['theme']) {
+function createCardStyles(
+  theme: ReturnType<typeof useTheme>['theme'],
+  cardBackground: string,
+) {
   const layout = theme.components.homePopularQuote;
 
   return createThemedStyles(theme, t => ({
@@ -116,7 +148,7 @@ function createCardStyles(theme: ReturnType<typeof useTheme>['theme']) {
       width: '100%',
       height: layout.cardHeight,
       borderRadius: layout.cardRadius,
-      backgroundColor: layout.cardBackground,
+      backgroundColor: cardBackground,
       overflow: 'hidden',
       position: 'relative',
     },
@@ -139,6 +171,17 @@ function createCardStyles(theme: ReturnType<typeof useTheme>['theme']) {
       borderRadius: layout.decorSmallSize / 2,
       backgroundColor: layout.decorColor,
       opacity: layout.decorOpacity,
+    },
+    editButton: {
+      position: 'absolute',
+      top: layout.editButtonTop,
+      right: layout.editButtonRight,
+      width: layout.editButtonSize,
+      height: layout.editButtonSize,
+      zIndex: 3,
+    },
+    editButtonPressed: {
+      opacity: 0.7,
     },
     content: {
       flex: 1,
@@ -164,13 +207,23 @@ function createCardStyles(theme: ReturnType<typeof useTheme>['theme']) {
       borderBottomLeftRadius: layout.cardRadius,
       borderBottomRightRadius: layout.cardRadius,
       zIndex: 2,
+      position: 'relative',
+    },
+    actionBarTopBorder: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: layout.actionBarTopBorder,
     },
     actionItem: {
+      width: layout.actionItemWidth,
+      height: layout.actionItemHeight,
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
       gap: layout.actionIconGap,
-      paddingVertical: 8,
-      paddingHorizontal: 4,
     },
     actionItemPressed: {
       opacity: 0.7,
@@ -178,6 +231,11 @@ function createCardStyles(theme: ReturnType<typeof useTheme>['theme']) {
     actionCount: {
       ...t.typography.quoteActionCount,
       color: layout.actionCountColor,
+      textAlign: 'center',
+      includeFontPadding: false,
+      textShadowColor: 'transparent',
+      textShadowRadius: 0,
+      textShadowOffset: { width: 0, height: 0 },
     },
   }));
 }

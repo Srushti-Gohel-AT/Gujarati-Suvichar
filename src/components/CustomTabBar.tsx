@@ -11,7 +11,7 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Mask, Path, Rect, Stop } from 'react-native-svg';
 import { strings } from '../i18n';
 import type { TabParamList } from '../navigation/types';
 import { createThemedStyles, useTheme } from '../theme';
@@ -62,25 +62,25 @@ const TAB_CONFIG: Record<TabRouteName, TabConfig> = {
   },
 };
 
-/** Figma: box-shadow 0 0 10px #00000029 — even glow (Android elevation can't do this) */
+/** Figma tab bar edge stroke — restored from main */
+const DARK_EDGE_STROKE = 1;
+
+/** Light-theme only: soft outer shadow (Figma 0 0 10px #00000029) */
 const FIGMA_SHADOW_BLUR = 10;
 const FIGMA_SHADOW_ALPHA = 0x29 / 0xff;
-/** Keep stacked rings soft so the glow does not read as a dark halo */
-const ANDROID_GLOW_STRENGTH = 0.08;
-const DARK_EDGE_STROKE = 1;
+const ANDROID_GLOW_STRENGTH = 0.12;
 
 /**
  * Dark theme partial outline: TL corner + top + bottom + BR corner.
  * Stroke ends fade out (soft) so start/end points are not solid cutoffs.
+ * (Exact implementation from main / 8bd997f)
  */
 function DarkTabBarEdgeAccent({
   width,
   height,
-  color,
 }: {
   width: number;
   height: number;
-  color: string;
 }) {
   if (width <= 0) {
     return null;
@@ -89,11 +89,11 @@ function DarkTabBarEdgeAccent({
   const r = height / 2;
   const yTop = DARK_EDGE_STROKE / 2;
   const yBottom = height - DARK_EDGE_STROKE / 2;
-  // Flat edges soft grey; TL / BR corners slightly whitish
-  const edgeColor = color || 'rgba(160,160,160,0.55)';
-  const softColor = 'rgba(140,140,140,0.4)';
-  const cornerColor = 'rgba(200,200,200,0.65)';
-  const cornerSoftColor = 'rgba(190,190,190,0.5)';
+  // Soft white (not solid) — same in light & dark
+  const edgeColor = '#FFFFFF';
+  const softColor = '#FFFFFF';
+  const cornerColor = '#FFFFFF';
+  const cornerSoftColor = '#FFFFFF';
 
   return (
     <Svg
@@ -102,40 +102,38 @@ function DarkTabBarEdgeAccent({
       height={height}
       style={StyleSheet.absoluteFill}>
       <Defs>
-        {/* Top-left arc — longer soft fade at left mid (start) */}
+        {/* Top-left arc — soft white, fade at ends */}
         <LinearGradient id="tlCornerFade" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={cornerColor} stopOpacity="1" />
-          <Stop offset="0.3" stopColor={cornerColor} stopOpacity="1" />
-          <Stop offset="0.5" stopColor={cornerColor} stopOpacity="0.75" />
-          <Stop offset="0.7" stopColor={cornerColor} stopOpacity="0.4" />
-          <Stop offset="0.88" stopColor={cornerColor} stopOpacity="0.15" />
+          <Stop offset="0" stopColor={cornerColor} stopOpacity="0.55" />
+          <Stop offset="0.3" stopColor={cornerColor} stopOpacity="0.45" />
+          <Stop offset="0.55" stopColor={cornerColor} stopOpacity="0.25" />
+          <Stop offset="0.78" stopColor={cornerColor} stopOpacity="0.1" />
           <Stop offset="1" stopColor={cornerColor} stopOpacity="0" />
         </LinearGradient>
-        {/* Top edge — soft fade before top-right */}
+        {/* Top edge — soft white, fade before top-right */}
         <LinearGradient id="topEdgeFade" x1="0" y1="0" x2="1" y2="0">
-          <Stop offset="0" stopColor={edgeColor} stopOpacity="0.85" />
-          <Stop offset="0.08" stopColor={edgeColor} stopOpacity="1" />
-          <Stop offset="0.58" stopColor={edgeColor} stopOpacity="1" />
-          <Stop offset="0.72" stopColor={edgeColor} stopOpacity="0.7" />
-          <Stop offset="0.86" stopColor={edgeColor} stopOpacity="0.3" />
+          <Stop offset="0" stopColor={edgeColor} stopOpacity="0.4" />
+          <Stop offset="0.1" stopColor={edgeColor} stopOpacity="0.45" />
+          <Stop offset="0.45" stopColor={edgeColor} stopOpacity="0.35" />
+          <Stop offset="0.7" stopColor={edgeColor} stopOpacity="0.15" />
+          <Stop offset="0.88" stopColor={edgeColor} stopOpacity="0.05" />
           <Stop offset="1" stopColor={edgeColor} stopOpacity="0" />
         </LinearGradient>
-        {/* Bottom edge — soft fade at left start */}
+        {/* Bottom edge — soft white, stronger near right */}
         <LinearGradient id="bottomEdgeFade" x1="0" y1="0" x2="1" y2="0">
           <Stop offset="0" stopColor={softColor} stopOpacity="0" />
-          <Stop offset="0.14" stopColor={softColor} stopOpacity="0.3" />
-          <Stop offset="0.28" stopColor={softColor} stopOpacity="0.7" />
-          <Stop offset="0.42" stopColor={softColor} stopOpacity="1" />
-          <Stop offset="0.92" stopColor={softColor} stopOpacity="1" />
-          <Stop offset="1" stopColor={softColor} stopOpacity="0.85" />
+          <Stop offset="0.35" stopColor={softColor} stopOpacity="0" />
+          <Stop offset="0.55" stopColor={softColor} stopOpacity="0.08" />
+          <Stop offset="0.78" stopColor={softColor} stopOpacity="0.28" />
+          <Stop offset="0.92" stopColor={softColor} stopOpacity="0.38" />
+          <Stop offset="1" stopColor={softColor} stopOpacity="0.4" />
         </LinearGradient>
-        {/* Bottom-right arc — longer soft fade at right mid (end) */}
+        {/* Bottom-right arc — soft white, fade at ends */}
         <LinearGradient id="brCornerFade" x1="0" y1="1" x2="0" y2="0">
-          <Stop offset="0" stopColor={cornerSoftColor} stopOpacity="1" />
-          <Stop offset="0.3" stopColor={cornerSoftColor} stopOpacity="1" />
-          <Stop offset="0.5" stopColor={cornerSoftColor} stopOpacity="0.75" />
-          <Stop offset="0.7" stopColor={cornerSoftColor} stopOpacity="0.4" />
-          <Stop offset="0.88" stopColor={cornerSoftColor} stopOpacity="0.15" />
+          <Stop offset="0" stopColor={cornerSoftColor} stopOpacity="0.5" />
+          <Stop offset="0.3" stopColor={cornerSoftColor} stopOpacity="0.4" />
+          <Stop offset="0.55" stopColor={cornerSoftColor} stopOpacity="0.22" />
+          <Stop offset="0.78" stopColor={cornerSoftColor} stopOpacity="0.08" />
           <Stop offset="1" stopColor={cornerSoftColor} stopOpacity="0" />
         </LinearGradient>
       </Defs>
@@ -183,42 +181,68 @@ function DarkTabBarEdgeAccent({
   );
 }
 
-function AndroidTabBarGlow({
-  borderRadius,
-  isDark,
+/**
+ * Light-theme outer shadow — same ring math as main, but center is masked out
+ * so nothing sits under the glass (bar bg stays unchanged).
+ */
+function LightTabBarOuterShadow({
+  width,
+  height,
 }: {
-  borderRadius: number;
-  isDark: boolean;
+  width: number;
+  height: number;
 }) {
-  // Dark: soft white rim; light: soft black rim — strength tuned per theme
-  const rgb = isDark ? '255,255,255' : '0,0,0';
-  const strength = isDark ? 0.16 : ANDROID_GLOW_STRENGTH;
+  if (width <= 0) {
+    return null;
+  }
+
+  const pad = FIGMA_SHADOW_BLUR;
+  const svgW = width + pad * 2;
+  const svgH = height + pad * 2;
+  const radius = height / 2;
 
   return (
-    <>
+    <Svg
+      pointerEvents="none"
+      width={svgW}
+      height={svgH}
+      style={{ position: 'absolute', top: -pad, left: -pad }}>
+      <Defs>
+        <Mask id="lightTabShadowHole" x={0} y={0} width={svgW} height={svgH}>
+          {/* White = keep shadow; black = punch hole under the pill */}
+          <Rect x={0} y={0} width={svgW} height={svgH} fill="#FFFFFF" />
+          <Rect
+            x={pad}
+            y={pad}
+            width={width}
+            height={height}
+            rx={radius}
+            ry={radius}
+            fill="#000000"
+          />
+        </Mask>
+      </Defs>
       {Array.from({ length: FIGMA_SHADOW_BLUR }, (_, index) => {
         const expand = index + 1;
         const opacity =
           FIGMA_SHADOW_ALPHA *
           (1 - expand / (FIGMA_SHADOW_BLUR + 1)) *
-          strength;
+          ANDROID_GLOW_STRENGTH;
         return (
-          <View
+          <Rect
             key={expand}
-            pointerEvents="none"
-            style={{
-              position: 'absolute',
-              top: -expand,
-              left: -expand,
-              right: -expand,
-              bottom: -expand,
-              borderRadius: borderRadius + expand,
-              backgroundColor: `rgba(${rgb},${opacity})`,
-            }}
+            x={pad - expand}
+            y={pad - expand}
+            width={width + expand * 2}
+            height={height + expand * 2}
+            rx={radius + expand}
+            ry={radius + expand}
+            fill={`rgba(0,0,0,${opacity})`}
+            mask="url(#lightTabShadowHole)"
           />
         );
       })}
-    </>
+    </Svg>
   );
 }
 
@@ -232,7 +256,6 @@ export function CustomTabBar({
   const { tabBar } = theme.colors;
   const { tabBar: tabBarLayout } = theme.components;
   const styles = useMemo(() => createTabBarStyles(theme), [theme]);
-  const shadowColor = isDark ? '#FFFFFF' : '#000000';
   const [barWidth, setBarWidth] = useState(0);
 
   const onBarLayout = (event: LayoutChangeEvent) => {
@@ -251,73 +274,67 @@ export function CustomTabBar({
         },
       ]}>
       <View style={styles.barHost}>
-        {Platform.OS === 'ios' ? (
-          <View
-            pointerEvents="none"
-            style={[
-              styles.shadowCast,
-              {
-                // Figma: box-shadow: 0px 0px 10px 0px #00000029
-                // Dark: soft white glow; light: soft black glow
-                shadowColor,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: isDark
-                  ? FIGMA_SHADOW_ALPHA * 1.15
-                  : FIGMA_SHADOW_ALPHA,
-                shadowRadius: FIGMA_SHADOW_BLUR,
-                backgroundColor: 'rgba(255,255,255,0.01)',
-              },
-            ]}
-          />
-        ) : (
-          // Light only: soft ambient glow. Dark uses top/bottom edge lines instead
-          // (full glow + plate reads as a thick dark outer ring in dark theme).
-          !isDark ? (
-            <>
-              <AndroidTabBarGlow
-                borderRadius={tabBarLayout.height}
-                isDark={false}
-              />
-              <View
-                pointerEvents="none"
-                style={[
-                  styles.androidShadowPlate,
-                  { backgroundColor: theme.colors.surface },
-                ]}
-              />
-            </>
-          ) : null
-        )}
+        {/* Light only: main shadow outside pill — never under glass */}
+        {!isDark ? (
+          Platform.OS === 'ios' ? (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.shadowCast,
+                {
+                  // Figma: box-shadow: 0px 0px 10px 0px #00000029
+                  shadowColor: '#000000',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: FIGMA_SHADOW_ALPHA,
+                  shadowRadius: FIGMA_SHADOW_BLUR,
+                  backgroundColor: 'rgba(255,255,255,0.01)',
+                },
+              ]}
+            />
+          ) : (
+            <LightTabBarOuterShadow
+              width={barWidth}
+              height={tabBarLayout.height}
+            />
+          )
+        ) : null}
 
         <View
           onLayout={onBarLayout}
           style={[
             styles.container,
             {
-              // Single translucent tint — Figma white @ 20% / 25%
-              backgroundColor: tabBar.containerBackground,
-              // No full outline — dark uses faded TL/top/bottom/BR accents
-              borderWidth: 0,
+              backgroundColor: 'transparent',
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: tabBar.containerBorder,
               overflow: 'hidden',
             },
           ]}>
-          {/* Blur only on iOS — Android BlurView was opaque + caused pill edge shadow */}
-          {Platform.OS === 'ios' ? (
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType={tabBar.blurType}
-              blurAmount={tabBar.blurAmountIos}
-              reducedTransparencyFallbackColor={tabBar.blurFallback}
-            />
-          ) : null}
-
-          {isDark ? (
-            <DarkTabBarEdgeAccent
-              width={barWidth}
-              height={tabBarLayout.height}
-              color="rgba(160,160,160,0.55)"
-            />
-          ) : null}
+          {/* Clean glass: blur only + light tint — no heavy overlay */}
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType={tabBar.blurType}
+            blurAmount={
+              Platform.OS === 'ios'
+                ? tabBar.blurAmountIos
+                : tabBar.blurAmountAndroid
+            }
+            reducedTransparencyFallbackColor={tabBar.blurFallback}
+            {...(Platform.OS === 'android'
+              ? { overlayColor: 'transparent' }
+              : null)}
+          />
+          <View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: tabBar.containerBackground },
+            ]}
+          />
+          <DarkTabBarEdgeAccent
+            width={barWidth}
+            height={tabBarLayout.height}
+          />
           <View style={styles.tabRow}>
             {state.routes.map((route, index) => {
               const routeName = route.name as TabRouteName;
@@ -435,23 +452,11 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       bottom: 0,
       borderRadius: tabBarLayout.height,
     },
-    /** Opaque plate — covers glow center so only the soft outer rim remains */
-    androidShadowPlate: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderRadius: tabBarLayout.height,
-      elevation: 0,
-    },
     container: {
       width: '100%',
       height: tabBarLayout.height,
       borderRadius: tabBarLayout.height,
-      // Android: overflow:hidden + alpha often paints opaque; clip radii without it
-      overflow: Platform.OS === 'ios' ? 'hidden' : 'visible',
-      borderWidth: 0,
+      overflow: 'hidden',
       elevation: 0,
       shadowOpacity: 0,
       shadowRadius: 0,

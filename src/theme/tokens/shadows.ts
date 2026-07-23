@@ -1,9 +1,9 @@
 export const shadows = {
   tabBar: {
-    // Figma: box-shadow: 0px 0px 10px 0px #00000029
+    // Soft rim — visible under glass without looking too dark
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0x29 / 0xff,
+    shadowOpacity: 0.22,
     shadowRadius: 10,
     elevation: 8,
   },
