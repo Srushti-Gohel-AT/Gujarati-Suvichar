@@ -59,12 +59,12 @@ export const typography = {
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
-  /** Persistent app header title — Bold 18; line-height 24 (Gujarati matras need headroom beyond 100%) */
+  /** Persistent app header title — Bold 18; taller line-height for Gujarati glyphs */
   appHeaderTitle: {
     fontFamily: fontFamily.bold,
     fontSize: 18,
     ...(Platform.OS === 'ios' ? { fontWeight: fontWeight.bold } : {}),
-    lineHeight: 24,
+    lineHeight: 28,
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
@@ -100,7 +100,7 @@ export const typography = {
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
-  /** Settings list row labels — Anek Gujarati Medium 16px; line-height > 100% for Gujarati matras in RN */
+  /** Settings list row labels — Medium 16; line-height 22 prevents Gujarati clipping */
   settingsLabel: {
     ...fontForWeight('medium'),
     fontSize: 16,

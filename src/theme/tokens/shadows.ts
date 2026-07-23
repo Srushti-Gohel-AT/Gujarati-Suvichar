@@ -1,10 +1,11 @@
 export const shadows = {
   tabBar: {
+    // Figma: box-shadow: 0px 0px 10px 0px #00000029
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0x29 / 0xff,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 10,
+    elevation: 8,
   },
   tabBarActivePill: {
     shadowColor: '#000000',

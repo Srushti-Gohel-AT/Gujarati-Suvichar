@@ -10,7 +10,7 @@ export function CategoriesIconSelected({
   size = 20,
 }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="-0.26 -0.26 20.51 20.51" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
       <Path
         opacity={0.4}
         d="M13.3962 1.6665H16.2178C17.3864 1.6665 18.3333 2.62138 18.3333 3.79981V6.64527C18.3333 7.8237 17.3864 8.77858 16.2178 8.77858H13.3962C12.2276 8.77858 11.2808 7.8237 11.2808 6.64527V3.79981C11.2808 2.62138 12.2276 1.6665 13.3962 1.6665Z"

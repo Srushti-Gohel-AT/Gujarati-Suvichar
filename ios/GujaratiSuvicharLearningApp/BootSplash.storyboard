@@ -39,5 +39,8 @@
     </scenes>
     <resources>
         <image name="BootSplashLogo-75850e" width="258" height="165"/>
+        <namedColor name="BootSplashBackground-75850e">
+            <color red="1.00000000000000" green="1.00000000000000" blue="1.00000000000000" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

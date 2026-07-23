@@ -1,18 +1,27 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BlurView } from '@react-native-community/blur';
 import type { ComponentType } from 'react';
-import { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { strings } from '../i18n';
 import type { TabParamList } from '../navigation/types';
 import { createThemedStyles, useTheme } from '../theme';
 import {
   CategoriesIcon,
   CategoriesIconSelected,
-  FavoritesIcon,
-  FavoritesTabIcon,
   HomeIcon,
   HomeIconSelected,
+  PostsTabIcon,
+  PostsTabIconSelected,
   SettingsIcon,
   SettingsIconSelected,
 } from './icons';
@@ -41,10 +50,10 @@ const TAB_CONFIG: Record<TabRouteName, TabConfig> = {
     Icon: CategoriesIcon,
     SelectedIcon: CategoriesIconSelected,
   },
-  Favorites: {
-    label: strings.tabs.favorites,
-    Icon: FavoritesIcon,
-    SelectedIcon: FavoritesTabIcon,
+  Posts: {
+    label: strings.tabs.posts,
+    Icon: PostsTabIcon,
+    SelectedIcon: PostsTabIconSelected,
   },
   Settings: {
     label: strings.tabs.settings,
@@ -52,6 +61,166 @@ const TAB_CONFIG: Record<TabRouteName, TabConfig> = {
     SelectedIcon: SettingsIconSelected,
   },
 };
+
+/** Figma: box-shadow 0 0 10px #00000029 — even glow (Android elevation can't do this) */
+const FIGMA_SHADOW_BLUR = 10;
+const FIGMA_SHADOW_ALPHA = 0x29 / 0xff;
+/** Keep stacked rings soft so the glow does not read as a dark halo */
+const ANDROID_GLOW_STRENGTH = 0.08;
+const DARK_EDGE_STROKE = 1;
+
+/**
+ * Dark theme partial outline: TL corner + top + bottom + BR corner.
+ * Stroke ends fade out (soft) so start/end points are not solid cutoffs.
+ */
+function DarkTabBarEdgeAccent({
+  width,
+  height,
+  color,
+}: {
+  width: number;
+  height: number;
+  color: string;
+}) {
+  if (width <= 0) {
+    return null;
+  }
+
+  const r = height / 2;
+  const yTop = DARK_EDGE_STROKE / 2;
+  const yBottom = height - DARK_EDGE_STROKE / 2;
+  // Flat edges soft grey; TL / BR corners slightly whitish
+  const edgeColor = color || 'rgba(160,160,160,0.55)';
+  const softColor = 'rgba(140,140,140,0.4)';
+  const cornerColor = 'rgba(200,200,200,0.65)';
+  const cornerSoftColor = 'rgba(190,190,190,0.5)';
+
+  return (
+    <Svg
+      pointerEvents="none"
+      width={width}
+      height={height}
+      style={StyleSheet.absoluteFill}>
+      <Defs>
+        {/* Top-left arc — longer soft fade at left mid (start) */}
+        <LinearGradient id="tlCornerFade" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={cornerColor} stopOpacity="1" />
+          <Stop offset="0.3" stopColor={cornerColor} stopOpacity="1" />
+          <Stop offset="0.5" stopColor={cornerColor} stopOpacity="0.75" />
+          <Stop offset="0.7" stopColor={cornerColor} stopOpacity="0.4" />
+          <Stop offset="0.88" stopColor={cornerColor} stopOpacity="0.15" />
+          <Stop offset="1" stopColor={cornerColor} stopOpacity="0" />
+        </LinearGradient>
+        {/* Top edge — soft fade before top-right */}
+        <LinearGradient id="topEdgeFade" x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0" stopColor={edgeColor} stopOpacity="0.85" />
+          <Stop offset="0.08" stopColor={edgeColor} stopOpacity="1" />
+          <Stop offset="0.58" stopColor={edgeColor} stopOpacity="1" />
+          <Stop offset="0.72" stopColor={edgeColor} stopOpacity="0.7" />
+          <Stop offset="0.86" stopColor={edgeColor} stopOpacity="0.3" />
+          <Stop offset="1" stopColor={edgeColor} stopOpacity="0" />
+        </LinearGradient>
+        {/* Bottom edge — soft fade at left start */}
+        <LinearGradient id="bottomEdgeFade" x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0" stopColor={softColor} stopOpacity="0" />
+          <Stop offset="0.14" stopColor={softColor} stopOpacity="0.3" />
+          <Stop offset="0.28" stopColor={softColor} stopOpacity="0.7" />
+          <Stop offset="0.42" stopColor={softColor} stopOpacity="1" />
+          <Stop offset="0.92" stopColor={softColor} stopOpacity="1" />
+          <Stop offset="1" stopColor={softColor} stopOpacity="0.85" />
+        </LinearGradient>
+        {/* Bottom-right arc — longer soft fade at right mid (end) */}
+        <LinearGradient id="brCornerFade" x1="0" y1="1" x2="0" y2="0">
+          <Stop offset="0" stopColor={cornerSoftColor} stopOpacity="1" />
+          <Stop offset="0.3" stopColor={cornerSoftColor} stopOpacity="1" />
+          <Stop offset="0.5" stopColor={cornerSoftColor} stopOpacity="0.75" />
+          <Stop offset="0.7" stopColor={cornerSoftColor} stopOpacity="0.4" />
+          <Stop offset="0.88" stopColor={cornerSoftColor} stopOpacity="0.15" />
+          <Stop offset="1" stopColor={cornerSoftColor} stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+
+      {/* Top-left quarter: left mid → top mid */}
+      <Path
+        d={`M ${DARK_EDGE_STROKE / 2} ${r} A ${r - DARK_EDGE_STROKE / 2} ${
+          r - DARK_EDGE_STROKE / 2
+        } 0 0 1 ${r} ${yTop}`}
+        stroke="url(#tlCornerFade)"
+        strokeWidth={DARK_EDGE_STROKE}
+        fill="none"
+        strokeLinecap="round"
+      />
+
+      {/* Top flat edge */}
+      <Path
+        d={`M ${r} ${yTop} L ${width - r} ${yTop}`}
+        stroke="url(#topEdgeFade)"
+        strokeWidth={DARK_EDGE_STROKE}
+        fill="none"
+        strokeLinecap="round"
+      />
+
+      {/* Bottom flat edge */}
+      <Path
+        d={`M ${r} ${yBottom} L ${width - r} ${yBottom}`}
+        stroke="url(#bottomEdgeFade)"
+        strokeWidth={DARK_EDGE_STROKE}
+        fill="none"
+        strokeLinecap="round"
+      />
+
+      {/* Bottom-right quarter: bottom mid → right mid */}
+      <Path
+        d={`M ${width - r} ${yBottom} A ${r - DARK_EDGE_STROKE / 2} ${
+          r - DARK_EDGE_STROKE / 2
+        } 0 0 0 ${width - DARK_EDGE_STROKE / 2} ${r}`}
+        stroke="url(#brCornerFade)"
+        strokeWidth={DARK_EDGE_STROKE}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
+function AndroidTabBarGlow({
+  borderRadius,
+  isDark,
+}: {
+  borderRadius: number;
+  isDark: boolean;
+}) {
+  // Dark: soft white rim; light: soft black rim — strength tuned per theme
+  const rgb = isDark ? '255,255,255' : '0,0,0';
+  const strength = isDark ? 0.16 : ANDROID_GLOW_STRENGTH;
+
+  return (
+    <>
+      {Array.from({ length: FIGMA_SHADOW_BLUR }, (_, index) => {
+        const expand = index + 1;
+        const opacity =
+          FIGMA_SHADOW_ALPHA *
+          (1 - expand / (FIGMA_SHADOW_BLUR + 1)) *
+          strength;
+        return (
+          <View
+            key={expand}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: -expand,
+              left: -expand,
+              right: -expand,
+              bottom: -expand,
+              borderRadius: borderRadius + expand,
+              backgroundColor: `rgba(${rgb},${opacity})`,
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 export function CustomTabBar({
   state,
@@ -63,110 +232,178 @@ export function CustomTabBar({
   const { tabBar } = theme.colors;
   const { tabBar: tabBarLayout } = theme.components;
   const styles = useMemo(() => createTabBarStyles(theme), [theme]);
+  const shadowColor = isDark ? '#FFFFFF' : '#000000';
+  const [barWidth, setBarWidth] = useState(0);
+
+  const onBarLayout = (event: LayoutChangeEvent) => {
+    setBarWidth(event.nativeEvent.layout.width);
+  };
 
   return (
     <View
       style={[
         styles.wrapper,
         {
-          paddingBottom: Math.max(insets.bottom, tabBarLayout.bottomInsetMin),
+          paddingBottom:
+            Math.max(insets.bottom, tabBarLayout.bottomInsetMin) +
+            tabBarLayout.bottomMargin,
           paddingHorizontal: tabBarLayout.horizontalMargin,
         },
       ]}>
-      <View
-        style={[
-          styles.pill,
-          {
-            backgroundColor: tabBar.containerBackground,
-            borderColor: tabBar.containerBorder,
-          },
-        ]}>
-        <View style={styles.tabRow}>
+      <View style={styles.barHost}>
+        {Platform.OS === 'ios' ? (
+          <View
+            pointerEvents="none"
+            style={[
+              styles.shadowCast,
+              {
+                // Figma: box-shadow: 0px 0px 10px 0px #00000029
+                // Dark: soft white glow; light: soft black glow
+                shadowColor,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: isDark
+                  ? FIGMA_SHADOW_ALPHA * 1.15
+                  : FIGMA_SHADOW_ALPHA,
+                shadowRadius: FIGMA_SHADOW_BLUR,
+                backgroundColor: 'rgba(255,255,255,0.01)',
+              },
+            ]}
+          />
+        ) : (
+          // Light only: soft ambient glow. Dark uses top/bottom edge lines instead
+          // (full glow + plate reads as a thick dark outer ring in dark theme).
+          !isDark ? (
+            <>
+              <AndroidTabBarGlow
+                borderRadius={tabBarLayout.height}
+                isDark={false}
+              />
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.androidShadowPlate,
+                  { backgroundColor: theme.colors.surface },
+                ]}
+              />
+            </>
+          ) : null
+        )}
+
+        <View
+          onLayout={onBarLayout}
+          style={[
+            styles.container,
+            {
+              // Single translucent tint — Figma white @ 20% / 25%
+              backgroundColor: tabBar.containerBackground,
+              // No full outline — dark uses faded TL/top/bottom/BR accents
+              borderWidth: 0,
+              overflow: 'hidden',
+            },
+          ]}>
+          {/* Blur only on iOS — Android BlurView was opaque + caused pill edge shadow */}
+          {Platform.OS === 'ios' ? (
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType={tabBar.blurType}
+              blurAmount={tabBar.blurAmountIos}
+              reducedTransparencyFallbackColor={tabBar.blurFallback}
+            />
+          ) : null}
+
+          {isDark ? (
+            <DarkTabBarEdgeAccent
+              width={barWidth}
+              height={tabBarLayout.height}
+              color="rgba(160,160,160,0.55)"
+            />
+          ) : null}
+          <View style={styles.tabRow}>
             {state.routes.map((route, index) => {
-                const routeName = route.name as TabRouteName;
-                const { options } = descriptors[route.key];
-                const isFocused = state.index === index;
-                const config = TAB_CONFIG[routeName];
-                const IconComponent = isFocused
-                  ? config.SelectedIcon
-                  : config.Icon;
-                const iconColor = isFocused
-                  ? tabBar.activeIcon
-                  : tabBar.inactiveIcon;
-                const isFavoritesTab = routeName === 'Favorites';
+              const routeName = route.name as TabRouteName;
+              const { options } = descriptors[route.key];
+              const isFocused = state.index === index;
+              const config = TAB_CONFIG[routeName];
+              const IconComponent = isFocused
+                ? config.SelectedIcon
+                : config.Icon;
+              const iconColor = isFocused
+                ? tabBar.activeIcon
+                : tabBar.inactiveIcon;
 
-                const onPress = () => {
-                  const event = navigation.emit({
-                    type: 'tabPress',
-                    target: route.key,
-                    canPreventDefault: true,
-                  });
+              const onPress = () => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                  canPreventDefault: true,
+                });
 
-                  if (!isFocused && !event.defaultPrevented) {
-                    navigation.navigate(route.name, route.params);
+                if (!isFocused && !event.defaultPrevented) {
+                  navigation.navigate(route.name, route.params);
+                }
+              };
+
+              const onLongPress = () => {
+                navigation.emit({
+                  type: 'tabLongPress',
+                  target: route.key,
+                });
+              };
+
+              return (
+                <Pressable
+                  key={route.key}
+                  accessibilityRole="button"
+                  accessibilityState={isFocused ? { selected: true } : {}}
+                  accessibilityLabel={
+                    options.tabBarAccessibilityLabel ?? config.label
                   }
-                };
-
-                const onLongPress = () => {
-                  navigation.emit({
-                    type: 'tabLongPress',
-                    target: route.key,
-                  });
-                };
-
-                return (
-                  <Pressable
-                    key={route.key}
-                    accessibilityRole="button"
-                    accessibilityState={isFocused ? { selected: true } : {}}
-                    accessibilityLabel={
-                      options.tabBarAccessibilityLabel ?? config.label
-                    }
-                    onPress={onPress}
-                    onLongPress={onLongPress}
-                    style={({ pressed }) => [
-                      styles.tabItem,
-                      isFocused && [
-                        styles.tabItemActive,
-                        { backgroundColor: tabBar.activePillBackground },
-                      ],
-                      pressed && styles.tabItemPressed,
-                    ]}>
-                    {isFocused ? (
-                      <View style={styles.tabActiveContent}>
-                        <View style={styles.tabIconSlot}>
-                          {isFavoritesTab ? (
-                            <FavoritesTabIcon
-                              color={iconColor}
-                              size={tabBarLayout.iconSize}
-                              variant={isDark ? 'dark' : 'light'}
-                            />
-                          ) : (
-                            <IconComponent
-                              color={iconColor}
-                              size={tabBarLayout.iconSize}
-                            />
-                          )}
-                        </View>
-                        <Text
-                          style={[
-                            styles.tabLabel,
-                            { color: tabBar.activeLabel },
-                          ]}>
-                          {config.label}
-                        </Text>
-                      </View>
-                    ) : (
+                  android_ripple={null}
+                  onPress={onPress}
+                  onLongPress={onLongPress}
+                  style={[
+                    styles.tabItem,
+                    isFocused && [
+                      styles.tabItemActive,
+                      {
+                        backgroundColor: tabBar.activePillBackground,
+                        borderColor: tabBar.activePillBorder,
+                        borderWidth:
+                          tabBar.activePillBorder === 'transparent' ? 0 : 1,
+                      },
+                    ],
+                  ]}>
+                  {isFocused ? (
+                    <View style={styles.tabActiveContent}>
                       <View style={styles.tabIconSlot}>
                         <IconComponent
                           color={iconColor}
                           size={tabBarLayout.iconSize}
                         />
                       </View>
-                    )}
-                  </Pressable>
-                );
-              })}
+                      <View style={styles.tabLabelSlot}>
+                        <Text
+                          style={[
+                            styles.tabLabel,
+                            { color: tabBar.activeLabel },
+                          ]}
+                          numberOfLines={1}>
+                          {config.label}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.tabIconSlot}>
+                      <IconComponent
+                        color={iconColor}
+                        size={tabBarLayout.iconSize}
+                      />
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </View>
     </View>
@@ -184,15 +421,45 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       bottom: 0,
       backgroundColor: 'transparent',
     },
-    pill: {
+    barHost: {
+      width: '100%',
+      height: tabBarLayout.height,
+      position: 'relative',
+      overflow: 'visible',
+    },
+    shadowCast: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: tabBarLayout.height,
+    },
+    /** Opaque plate — covers glow center so only the soft outer rim remains */
+    androidShadowPlate: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: tabBarLayout.height,
+      elevation: 0,
+    },
+    container: {
       width: '100%',
       height: tabBarLayout.height,
       borderRadius: tabBarLayout.height,
-      borderWidth: 1,
-      ...t.shadows.tabBar,
+      // Android: overflow:hidden + alpha often paints opaque; clip radii without it
+      overflow: Platform.OS === 'ios' ? 'hidden' : 'visible',
+      borderWidth: 0,
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      shadowOffset: { width: 0, height: 0 },
     },
     tabRow: {
       flex: 1,
+      height: tabBarLayout.height,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -200,19 +467,24 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
     },
     tabItem: {
       height: tabBarLayout.itemHeight,
+      minWidth: tabBarLayout.itemHeight,
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    tabItemPressed: {
-      opacity: 0.85,
+      alignSelf: 'center',
+      borderRadius: tabBarLayout.itemHeight / 2,
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      shadowColor: 'transparent',
     },
     tabItemActive: {
-      width: tabBarLayout.itemWidth,
-      height: tabBarLayout.itemHeight,
-      borderRadius: tabBarLayout.activePillBorderRadius,
-      borderWidth:
-        t.colors.tabBar.activePillBorder === 'transparent' ? 0 : 1,
-      borderColor: t.colors.tabBar.activePillBorder,
+      alignSelf: 'center',
+      paddingHorizontal: tabBarLayout.activePillPaddingHorizontal,
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      shadowOffset: { width: 0, height: 0 },
       ...(t.colors.tabBar.showActivePillShadow
         ? t.shadows.tabBarActivePill
         : {}),
@@ -222,7 +494,6 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: tabBarLayout.activePillGap,
-      paddingHorizontal: tabBarLayout.activePillPaddingHorizontal,
     },
     tabIconSlot: {
       width: tabBarLayout.iconSize,
@@ -230,11 +501,14 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    tabLabelSlot: {
+      justifyContent: 'center',
+    },
     tabLabel: {
       ...t.typography.tabLabel,
-      lineHeight: tabBarLayout.iconSize,
       includeFontPadding: false,
       textAlignVertical: 'center',
+      transform: [{ translateY: 2 }],
     },
   }));
 }

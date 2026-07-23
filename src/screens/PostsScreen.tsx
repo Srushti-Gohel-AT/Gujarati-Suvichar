@@ -3,16 +3,14 @@ import { Text, View } from 'react-native';
 import { strings } from '../i18n';
 import { createThemedStyles, useTheme } from '../theme';
 
-export function LikedQuotesScreen() {
+export function PostsScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createScreenStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>{strings.screens.likedQuotes.title}</Text>
-      <Text style={styles.subtitle}>
-        {strings.screens.likedQuotes.subtitle}
-      </Text> */}
+      {/* <Text style={styles.title}>{strings.screens.posts.title}</Text>
+      <Text style={styles.subtitle}>{strings.screens.posts.subtitle}</Text> */}
     </View>
   );
 }

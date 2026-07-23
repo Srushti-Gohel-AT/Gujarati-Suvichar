@@ -7,7 +7,7 @@ type IconProps = {
 
 export function HomeIcon({ color = '#000000', size = 20 }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="-0.83 -1.03 22.05 22.05" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"

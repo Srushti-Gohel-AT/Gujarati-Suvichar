@@ -11,9 +11,8 @@ import com.zoontek.rnbootsplash.RNBootSplash
 class MainActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    ThemePreferenceResolver.applyTheme(this)
-    RNBootSplash.init(this, R.style.BootTheme)
     supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
+    RNBootSplash.init(this, R.style.BootTheme)
     super.onCreate(savedInstanceState)
   }
 

@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CustomTabBar } from '../components/CustomTabBar';
 import { CategoriesScreen } from '../screens/CategoriesScreen';
-import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { HomeScreen } from '../screens/HomeScreen';
+import { PostsScreen } from '../screens/PostsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { useTheme } from '../theme';
 import type { TabParamList } from './types';
@@ -11,7 +11,6 @@ const Tab = createBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
   const { theme } = useTheme();
-  const { tabBar } = theme.components;
 
   return (
     <Tab.Navigator
@@ -21,23 +20,19 @@ export function TabNavigator() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
-          shadowOpacity: 0,
-          height: tabBar.height + tabBar.bottomInsetMin,
+          height: 0,
         },
         sceneStyle: {
           backgroundColor: theme.colors.surface,
-          paddingBottom: tabBar.scenePaddingBottom,
+          // No bottom padding — content must draw under the floating translucent tab bar
         },
       }}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Categories" component={CategoriesScreen} />
-      <Tab.Screen name="Favorites" component={FavoritesScreen} />
+      <Tab.Screen name="Posts" component={PostsScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );

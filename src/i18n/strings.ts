@@ -6,8 +6,26 @@ export const strings = {
   tabs: {
     home: 'હોમ',
     categories: 'શ્રેણીઓ',
-    favorites: 'પોસ્ટ ફીડ',
+    posts: 'પોસ્ટ ફીડ',
     settings: 'સેટિંગ્સ',
+  },
+  screens: {
+    home: {
+      title: 'સુવિચાર',
+      subtitle: 'Welcome to Gujarati Suvichar',
+    },
+    categories: {
+      title: 'શ્રેણીઓ',
+      subtitle: 'Browse quote categories',
+    },
+    posts: {
+      title: 'પોસ્ટ ફીડ',
+      subtitle: 'Browse posts',
+    },
+    likedQuotes: {
+      title: 'મનપસંદ સુવિચાર',
+      subtitle: 'Your liked quotes will appear here',
+    },
   },
   navigation: {
     likedQuotesTitle: 'મનપસંદ સુવિચાર',

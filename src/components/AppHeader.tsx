@@ -1,9 +1,4 @@
-import {
-  Image,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -11,9 +6,8 @@ import {
 import { useMemo } from 'react';
 import { strings } from '../i18n';
 import { createThemedStyles, useTheme } from '../theme';
-import { HeaderHeartIcon } from './icons';
+import { HeaderHeartIcon, HeaderLogoIcon } from './icons';
 
-const HEADER_LOGO = require('../../assets/header-logo.png');
 const HEADER_TOP_SHADOW_MASK_HEIGHT = 20;
 
 type AppHeaderProps = {
@@ -74,11 +68,12 @@ export function AppHeader({ onHeartPress }: AppHeaderProps) {
               ]}>
               <View style={styles.content}>
                 <View style={styles.titleGroup}>
-                  <Image
-                    source={HEADER_LOGO}
-                    style={styles.logo}
-                    resizeMode="contain"
-                  />
+                  <View style={styles.logo}>
+                    <HeaderLogoIcon
+                      width={headerLayout.logoWidth}
+                      height={headerLayout.logoHeight}
+                    />
+                  </View>
                   <Text
                     style={[styles.title, { color: header.title }]}
                     numberOfLines={1}>
@@ -172,7 +167,7 @@ function createHeaderStyles(theme: ReturnType<typeof useTheme>['theme']) {
     headerFrame: {
       width: '100%',
       position: 'relative',
-      overflow: 'hidden',
+      overflow: 'visible',
     },
     bottomBorderArc: {
       position: 'absolute',
@@ -185,9 +180,10 @@ function createHeaderStyles(theme: ReturnType<typeof useTheme>['theme']) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: headerLayout.paddingBottom,
+      paddingTop: headerLayout.gap,
       paddingBottom: headerLayout.paddingBottom,
       paddingHorizontal: headerLayout.paddingHorizontal,
+      overflow: 'visible',
     },
     titleGroup: {
       flex: 1,
@@ -196,6 +192,8 @@ function createHeaderStyles(theme: ReturnType<typeof useTheme>['theme']) {
       gap: headerLayout.titleGroupGap,
       marginRight: 8,
       minWidth: 0,
+      minHeight: Math.max(headerLayout.logoHeight, 28),
+      overflow: 'visible',
     },
     logo: {
       width: headerLayout.logoWidth,
@@ -205,7 +203,7 @@ function createHeaderStyles(theme: ReturnType<typeof useTheme>['theme']) {
     title: {
       ...t.typography.appHeaderTitle,
       flexShrink: 1,
-      includeFontPadding: false,
+      ...(Platform.OS === 'android' ? { includeFontPadding: true } : {}),
       textAlignVertical: 'center',
     },
     heartButton: {

@@ -99,12 +99,12 @@ function createSettingsStyles(theme: ReturnType<typeof useTheme>['theme']) {
     itemsGroup: {
       gap: settingsLayout.rowGap,
       width: '100%',
-      maxWidth: 388,
-      alignSelf: 'center',
     },
     versionWrapper: {
       marginTop: 'auto',
-      marginBottom: settingsLayout.versionBottomMargin,
+      marginBottom:
+        settingsLayout.versionBottomMargin +
+        t.components.tabBar.scenePaddingBottom,
       paddingHorizontal: settingsLayout.listHorizontalPadding,
     },
     version: {

@@ -15,18 +15,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    let storedPreference = ThemePreferences.resolvePreference()
-
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
-    delegate.storedThemePreference = storedPreference
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
 
     window = UIWindow(frame: UIScreen.main.bounds)
-    window?.overrideUserInterfaceStyle = ThemePreferences.interfaceStyle(for: storedPreference)
 
     factory.startReactNative(
       withModuleName: "GujaratiSuvicharLearningApp",
@@ -39,8 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
-  var storedThemePreference: String?
-
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
@@ -55,9 +49,6 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 
   override func customize(_ rootView: RCTRootView) {
     super.customize(rootView)
-    rootView.overrideUserInterfaceStyle = ThemePreferences.interfaceStyle(
-      for: storedThemePreference,
-    )
     RNBootSplash.initWithStoryboard("BootSplash", rootView: rootView)
   }
 }

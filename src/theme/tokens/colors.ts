@@ -2,7 +2,7 @@ export type TabBarBlurType = 'light' | 'dark' | 'xlight';
 
 export type TabBarColors = {
   background: string;
-  /** Figma navbar container fill (e.g. #FFFFFF @ 20% in light mode). */
+  /** Figma navbar frosted fill (e.g. white @ 20% in light mode). */
   containerBackground: string;
   inactiveIcon: string;
   activeIcon: string;
@@ -67,8 +67,8 @@ export type SemanticColors = {
   };
 };
 
-/** Frosted glass fill — visible on light surfaces (pure #FFFFFF @ 20% reads as white on white). */
-const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(228, 228, 235, 0.75)';
+/** Figma light-mode navbar fill — white @ 20% (prefer rgba for Android compositing) */
+const LIGHT_TAB_BAR_CONTAINER_BACKGROUND = 'rgba(255, 255, 255, 0.2)';
 
 /** Header heart button — shared fill/icon; border color varies by theme */
 const HEADER_HEART_BORDER_LIGHT = '#DDDDDD';
@@ -84,12 +84,12 @@ const DARK_SETTINGS_ACCENT = '#65B2FF';
 const lightTabBar: TabBarColors = {
   background: 'transparent',
   containerBackground: LIGHT_TAB_BAR_CONTAINER_BACKGROUND,
-  inactiveIcon: '#000000',
+  inactiveIcon: '#3D343D',
   activeIcon: '#1A67FF',
   activeLabel: '#1A67FF',
-  activePillBackground: '#FFFFFF',
+  activePillBackground: '#F0F2FF',
   activePillBorder: 'transparent',
-  containerBorder: 'rgba(255, 255, 255, 0.55)',
+  containerBorder: 'rgba(255, 255, 255, 0.45)',
   blurType: 'light',
   blurAmountIos: 20,
   blurAmountAndroid: 24,
@@ -116,7 +116,7 @@ const darkTabBar: TabBarColors = {
   blurAmountAndroid: 20,
   blurFallback: DARK_TAB_BAR_CONTAINER_BACKGROUND,
   ripple: 'rgba(255, 255, 255, 0.12)',
-  shadow: '#000000',
+  shadow: '#FFFFFF',
   showActivePillShadow: false,
 };
 
