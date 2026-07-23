@@ -32,7 +32,7 @@ export const componentTokens = {
     listHorizontalPadding: 12,
     listTopPadding: 20,
     rowGap: 24,
-    versionBottomMargin: 10,
+    versionBottomMargin: 35,
     toggleTrackWidth: 44,
     toggleTrackHeight: 24,
     toggleThumbSize: 20,
