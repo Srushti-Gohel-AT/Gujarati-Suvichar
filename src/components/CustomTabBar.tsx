@@ -464,6 +464,7 @@ function createTabBarStyles(theme: ReturnType<typeof useTheme>['theme']) {
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: tabBarLayout.rowPaddingHorizontal,
+      paddingVertical: tabBarLayout.rowPaddingVertical,
     },
     tabItem: {
       height: tabBarLayout.itemHeight,
