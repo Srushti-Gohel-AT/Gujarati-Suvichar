@@ -10,11 +10,11 @@ type SearchBarProps = {
 };
 
 export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) {
-  const { theme } = useTheme();
+  const { isDark, theme } = useTheme();
   const { searchBar } = theme.components;
   const styles = useMemo(() => createSearchBarStyles(theme), [theme]);
-  const borderColor =
-    theme.scheme === 'dark' ? theme.colors.border : searchBar.borderColor;
+  const borderColor = isDark ? searchBar.borderColorDark : searchBar.borderColor;
+  const mutedColor = isDark ? searchBar.mutedColorDark : searchBar.mutedColor;
 
   return (
     <View
@@ -32,13 +32,13 @@ export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) 
           gap: searchBar.iconGap,
         },
       ]}>
-      <SearchIcon color={theme.colors.textMuted} size={searchBar.iconSize} />
+      <SearchIcon color={mutedColor} size={searchBar.iconSize} />
       <View style={styles.inputWrap}>
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={theme.colors.textMuted}
+          placeholderTextColor={mutedColor}
           style={[
             styles.input,
             { transform: [{ translateY: searchBar.textOpticalOffset }] },

@@ -116,6 +116,10 @@ export const componentTokens = {
     iconGap: 16,
     borderWidth: 1,
     borderColor: '#E5E5E5',
+    borderColorDark: '#888888',
+    /** Placeholder + icon */
+    mutedColor: '#7A7A7A',
+    mutedColorDark: '#B0B0B0',
     marginHorizontal: 16,
     marginTop: 20,
     marginBottom: 20,
