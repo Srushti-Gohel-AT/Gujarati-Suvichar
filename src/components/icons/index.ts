@@ -1,5 +1,6 @@
 export { CategoriesIcon } from './CategoriesIcon';
 export { CategoriesIconSelected } from './CategoriesIconSelected';
+export { ChevronLeftIcon } from './ChevronLeftIcon';
 export { ChevronRightIcon } from './ChevronRightIcon';
 export { FavoritesIcon } from './FavoritesIcon';
 export { FavoritesIconSelected } from './FavoritesIconSelected';
@@ -19,5 +20,6 @@ export { QuoteEditIcon } from './QuoteEditIcon';
 export { QuoteHeartIcon } from './QuoteHeartIcon';
 export { QuoteShareIcon } from './QuoteShareIcon';
 export { RatingStarIcon } from './RatingStarIcon';
+export { SearchIcon } from './SearchIcon';
 export { ShareIcon } from './ShareIcon';
 export { StarIcon } from './StarIcon';

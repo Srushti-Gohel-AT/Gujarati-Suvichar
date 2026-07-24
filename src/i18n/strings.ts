@@ -21,6 +21,14 @@ export const strings = {
     categories: {
       title: 'શ્રેણીઓ',
       subtitle: 'Browse quote categories',
+      searchPlaceholder: 'શોધો...',
+      loadError: 'શ્રેણીઓ લોડ થઈ શકી નહીં',
+      empty: 'કોઈ શ્રેણી ઉપલબ્ધ નથી',
+      filterEmpty: 'કોઈ પરિણામ મળ્યું નથી',
+    },
+    subcategories: {
+      loadError: 'ઉપશ્રેણીઓ લોડ થઈ શકી નહીં',
+      empty: 'કોઈ ઉપશ્રેણી ઉપલબ્ધ નથી',
     },
     posts: {
       title: 'પોસ્ટ ફીડ',

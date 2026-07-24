@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { AppHeader } from '../components/AppHeader';
@@ -7,10 +7,7 @@ import { TabNavigator } from '../navigation/TabNavigator';
 import type { RootStackParamList } from '../navigation/types';
 import { createThemedStyles, useTheme } from '../theme';
 
-type MainScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Main'
->;
+type MainScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
 export function MainScreen() {
   const navigation = useNavigation<MainScreenNavigationProp>();

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useMemo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { QuotePost } from '../api/posts';
@@ -26,7 +26,7 @@ type ActionItem = {
   icon: ReactNode;
 };
 
-type RootNavigation = NativeStackNavigationProp<RootStackParamList>;
+type RootNavigation = StackNavigationProp<RootStackParamList>;
 
 export function PopularQuoteCard({
   quote,

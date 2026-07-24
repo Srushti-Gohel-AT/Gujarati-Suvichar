@@ -16,6 +16,7 @@ import {
 import { PopularQuoteCard } from '../components/PopularQuoteCard';
 import { POPULAR_QUOTES } from '../data/popularQuotes';
 import { strings } from '../i18n';
+import { navigateToRootScreen } from '../navigation/rootNavigation';
 import { createThemedStyles, useTheme } from '../theme';
 
 export function HomeScreen() {
@@ -44,6 +45,13 @@ export function HomeScreen() {
     void loadCategories();
   }, [loadCategories]);
 
+  const openSubcategories = useCallback((category: Category) => {
+    navigateToRootScreen('Subcategories', {
+      categoryId: String(category.id),
+      categoryName: category.categoryName,
+    });
+  }, []);
+
   const renderCategory = useCallback(
     ({ item }: { item: Category }) => {
       const imageUrl = item.image?.imageUrl;
@@ -55,6 +63,7 @@ export function HomeScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={item.categoryName}
+          onPress={() => openSubcategories(item)}
           style={({ pressed }) => [
             styles.categoryItem,
             pressed && styles.categoryItemPressed,
@@ -70,7 +79,7 @@ export function HomeScreen() {
         </Pressable>
       );
     },
-    [styles],
+    [openSubcategories, styles],
   );
 
   return (
