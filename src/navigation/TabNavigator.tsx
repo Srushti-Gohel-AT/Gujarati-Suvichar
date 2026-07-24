@@ -18,13 +18,8 @@ export function TabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        animation: 'fade',
-        transitionSpec: {
-          animation: 'timing',
-          config: {
-            duration: 200,
-          },
-        },
+        // Instant swap — fade leaves the previous tab visible at low opacity
+        animation: 'none',
         tabBarStyle: {
           position: 'absolute',
           backgroundColor: 'transparent',

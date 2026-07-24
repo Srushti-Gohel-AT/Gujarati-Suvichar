@@ -84,6 +84,21 @@ export const typography = {
     letterSpacing: 0,
   } satisfies TypographyStyle,
 
+  /** Overlay label on category/subcategory grid cards — SemiBold 14, line-height 100% */
+  categoryGridLabel: {
+    ...fontForWeight("semiBold"),
+    fontSize: 14,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
+  /** Search bar input / placeholder — Anek Gujarati Regular 16; taller LH for Gujarati glyphs */
+  searchInput: {
+    ...fontForWeight('regular'),
+    fontSize: 16,
+    lineHeight: 22,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
   /** Quote text inside popular quote cards — SemiBold 20 */
   quoteCardText: {
     ...fontForWeight('semiBold'),
@@ -104,6 +119,13 @@ export const typography = {
     ...fontForWeight('bold'),
     fontSize: 16,
     lineHeight: 22,
+    letterSpacing: 0,
+  } satisfies TypographyStyle,
+
+  /** Subcategory screen header — Anek Gujarati Bold 18, line-height 100% */
+  subcategoryHeaderTitle: {
+    ...fontForWeight('bold'),
+    fontSize: 18,
     letterSpacing: 0,
   } satisfies TypographyStyle,
 

@@ -106,4 +106,56 @@ export const componentTokens = {
     contentPaddingHorizontal: 16,
     titleMarginTop: 68,
   },
+  searchBar: {
+    height: 45,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    iconSize: 20,
+    /** Gap between search icon and placeholder text */
+    iconGap: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 20,
+    /**
+     * Anek Gujarati sits optically high in TextInput —
+     * nudge text down so top/bottom gaps look equal.
+     */
+    textOpticalOffset: 3,
+  },
+  categoryGrid: {
+    /** Screen content width on 360 design = 328 with 16 side insets */
+    horizontalPadding: 16,
+    gap: 16,
+    sectionTopPadding: 16,
+    paddingBottom: 2,
+    cardRadius: 10,
+    /** Width:height ≈ 4:3 — fills column width, height follows */
+    cardAspectRatio: 4 / 3,
+    overlayHeight: 33,
+    overlayPaddingVertical: 6,
+    overlayGap: 10,
+    /** Softer than tab bar — subtle frosted strip */
+    overlayBlurAmountIos: 8,
+    overlayBlurAmountAndroid: 10,
+    overlayTint: 'rgba(0, 0, 0, 0.08)',
+    /** Soft separator above the label bar */
+    overlayTopBorder: 'rgba(255, 255, 255, 0.2)',
+    overlayTopBorderWidth: 1,
+    labelColor: '#FFFFFF',
+    fallbackBackground: '#C8C8C8',
+  },
+  subcategoryHeader: {
+    /** Figma frame 82 includes ~40 status + 42 bar */
+    barHeight: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    gap: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    background: '#FAFAFA',
+    backIconSize: 24,
+  },
 } as const;

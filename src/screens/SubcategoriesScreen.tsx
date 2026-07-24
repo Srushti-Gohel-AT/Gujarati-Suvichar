@@ -1,3 +1,4 @@
+import type { StackScreenProps } from '@react-navigation/stack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -5,63 +6,57 @@ import {
   Text,
   View,
 } from 'react-native';
-import { fetchCategories, type Category } from '../api/categories';
+import { fetchCategories, type Subcategory } from '../api/categories';
 import {
   CategoryImageGrid,
   type CategoryGridItem,
 } from '../components/CategoryImageGrid';
-import { SearchBar } from '../components/SearchBar';
 import { strings } from '../i18n';
-import { navigateToRootScreen } from '../navigation/rootNavigation';
+import type { RootStackParamList } from '../navigation/types';
 import { createThemedStyles, useTheme } from '../theme';
 
-export function CategoriesScreen() {
+type Props = StackScreenProps<RootStackParamList, 'Subcategories'>;
+
+export function SubcategoriesScreen({ route }: Props) {
+  const { categoryId } = route.params;
   const { theme } = useTheme();
   const styles = useMemo(() => createScreenStyles(theme), [theme]);
 
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState('');
 
-  const loadCategories = useCallback(async () => {
+  const loadSubcategories = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await fetchCategories();
-      setCategories(data);
+      const category = data.find(item => String(item.id) === String(categoryId));
+      setSubcategories(category?.subcategory ?? []);
     } catch {
-      setError(strings.screens.categories.loadError);
-      setCategories([]);
+      setError(strings.screens.subcategories.loadError);
+      setSubcategories([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [categoryId]);
 
   useEffect(() => {
-    void loadCategories();
-  }, [loadCategories]);
+    void loadSubcategories();
+  }, [loadSubcategories]);
 
-  const filteredItems = useMemo((): CategoryGridItem[] => {
-    const normalized = query.trim().toLowerCase();
-    const source = normalized
-      ? categories.filter(category =>
-          category.categoryName.toLowerCase().includes(normalized),
-        )
-      : categories;
+  const items = useMemo(
+    (): CategoryGridItem[] =>
+      subcategories.map(subcategory => ({
+        id: subcategory.id,
+        title: subcategory.subcategoryName,
+        imageUrl: subcategory.image?.imageUrl,
+      })),
+    [subcategories],
+  );
 
-    return source.map(category => ({
-      id: String(category.id),
-      title: category.categoryName,
-      imageUrl: category.image?.imageUrl,
-    }));
-  }, [categories, query]);
-
-  const openSubcategories = useCallback((item: CategoryGridItem) => {
-    navigateToRootScreen('Subcategories', {
-      categoryId: item.id,
-      categoryName: item.title,
-    });
+  const onSubcategoryPress = useCallback((_item: CategoryGridItem) => {
+    // Quotes list for a subcategory will be wired in a later task.
   }, []);
 
   if (loading) {
@@ -77,7 +72,7 @@ export function CategoriesScreen() {
       <View style={styles.centered}>
         <Pressable
           accessibilityRole="button"
-          onPress={() => void loadCategories()}
+          onPress={() => void loadSubcategories()}
           style={styles.statePressable}>
           <Text style={styles.stateText}>{error}</Text>
         </Pressable>
@@ -85,25 +80,17 @@ export function CategoriesScreen() {
     );
   }
 
-  const emptyMessage =
-    categories.length === 0
-      ? strings.screens.categories.empty
-      : strings.screens.categories.filterEmpty;
-
   return (
     <View style={styles.container}>
-      <SearchBar
-        value={query}
-        onChangeText={setQuery}
-        placeholder={strings.screens.categories.searchPlaceholder}
-      />
       <CategoryImageGrid
-        data={filteredItems}
-        onItemPress={openSubcategories}
+        data={items}
+        onItemPress={onSubcategoryPress}
         contentContainerStyle={styles.gridContent}
         ListEmptyComponent={
           <View style={styles.emptyRow}>
-            <Text style={styles.stateText}>{emptyMessage}</Text>
+            <Text style={styles.stateText}>
+              {strings.screens.subcategories.empty}
+            </Text>
           </View>
         }
       />
@@ -112,6 +99,8 @@ export function CategoriesScreen() {
 }
 
 function createScreenStyles(theme: ReturnType<typeof useTheme>['theme']) {
+  const { categoryGrid } = theme.components;
+
   return createThemedStyles(theme, t => ({
     container: {
       flex: 1,
@@ -125,7 +114,8 @@ function createScreenStyles(theme: ReturnType<typeof useTheme>['theme']) {
       paddingHorizontal: t.spacing.lg,
     },
     gridContent: {
-      paddingBottom: t.components.tabBar.scenePaddingBottom,
+      paddingTop: categoryGrid.sectionTopPadding,
+      paddingBottom: categoryGrid.paddingBottom,
     },
     emptyRow: {
       paddingTop: t.spacing.xxl,
